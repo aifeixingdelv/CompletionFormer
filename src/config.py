@@ -6,18 +6,15 @@
     All of the parameters are defined here.
 """
 
-
 import time
 import argparse
 
-
 parser = argparse.ArgumentParser(description='CompletionFormer')
-
 
 # Dataset
 parser.add_argument('--dir_data',
                     type=str,
-                    default='./dataset/NYUDepthV2_HDF5',
+                    default='../../AutoMine-Depth/OCT-00/scene_01',
                     help='path to dataset')
 parser.add_argument('--data_name',
                     type=str,
@@ -32,12 +29,12 @@ parser.add_argument('--split_json',
                     help='path to json file')
 parser.add_argument('--patch_height',
                     type=int,
-                    default=228,
+                    default=384,
                     # default=240,
                     help='height of a patch to crop')
 parser.add_argument('--patch_width',
                     type=int,
-                    default=304,
+                    default=512,
                     # default=1216,
                     help='width of a patch to crop')
 parser.add_argument('--top_crop',
@@ -45,7 +42,6 @@ parser.add_argument('--top_crop',
                     default=0,
                     # default=100,
                     help='top crop size for KITTI dataset')
-
 
 # Hardware
 parser.add_argument('--seed',
@@ -72,7 +68,6 @@ parser.add_argument('--no_multiprocessing',
                     action='store_true',
                     default=False,
                     help='do not use multiprocessing')
-
 
 # Network
 parser.add_argument('--model',
@@ -120,7 +115,6 @@ parser.add_argument('--legacy',
                     default=False,
                     help='legacy code support for pre-trained models')
 
-
 # Training
 parser.add_argument('--loss',
                     type=str,
@@ -143,7 +137,7 @@ parser.add_argument('--opt_level',
                     choices=('O0', 'O1', 'O2', 'O3'))
 parser.add_argument('--pretrain',
                     type=str,
-                    default=None,
+                    default="KITTIDC_L1L2.pt",
                     help='ckpt path')
 parser.add_argument('--resume',
                     action='store_true',
@@ -182,13 +176,11 @@ parser.add_argument('--test_crop',
                     default=False,
                     help='crop for test')
 
-
 # Summary
 parser.add_argument('--num_summary',
                     type=int,
                     default=4,
                     help='maximum number of summary images to save')
-
 
 # Optimizer
 parser.add_argument('--lr',
@@ -254,7 +246,6 @@ parser.add_argument('--save_result_only',
                     action='store_true',
                     default=False,
                     help='save result images only with submission format')
-
 
 args = parser.parse_args()
 args.num_gpus = len(args.gpus.split(','))

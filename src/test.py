@@ -8,24 +8,8 @@ from model.completionformer import CompletionFormer
 from config import args as args_config
 import torch
 from PIL import Image
-
-
-def check_args(args):
-    new_args = args
-    if args.pretrain is not None:
-        assert os.path.exists(args.pretrain), \
-            "file not found: {}".format(args.pretrain)
-
-        if args.resume:
-            checkpoint = torch.load(args.pretrain)
-
-            new_args = checkpoint['args']
-            new_args.test_only = args.test_only
-            new_args.pretrain = args.pretrain
-            new_args.dir_data = args.dir_data
-            new_args.resume = args.resume
-
-    return new_args
+import time
+import argparse
 
 
 class AutoMine(Dataset):
@@ -56,8 +40,12 @@ class AutoMine(Dataset):
 
 
 def main(args):
+    save_dir = os.path.join(args.dir_data.replace("AutoMine-Depth", "AutoMine-DenseDepth"), "dense_depth")
+    if os.path.exists(save_dir):
+        os.system("rm -rf " + save_dir)
+    os.system("mkdir -p " + save_dir)
     dataset = AutoMine(args.dir_data)
-    loader_test = DataLoader(dataset=dataset, batch_size=1,
+    loader_test = DataLoader(dataset=dataset, batch_size=8,
                              shuffle=False, num_workers=4)
     net = CompletionFormer(args)
     net.cuda()
@@ -84,9 +72,8 @@ def main(args):
         with torch.no_grad():
             output = net(data)
             output = output['pred'].cpu().numpy().astype(np.uint8).squeeze()
-            Image.fromarray(output).save(f"test_output/{sample['name'][0]}.png")
+            Image.fromarray(output).save(save_dir + f"/{sample['name'][0]}.png")
 
 
 if __name__ == "__main__":
-    args_main = check_args(args_config)
-    main(args_main)
+    main(args_config)
